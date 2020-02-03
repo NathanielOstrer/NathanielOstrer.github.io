@@ -65,7 +65,7 @@
 				<!-- Main -->
 					<section id="main" style="width: 600px;">
 						<h1> About Me </h1>
-						<p> Hi, I'm Nathaniel! I'm a sophomore studying Computer Science at Brown University. </p>
+						<p> Hi, I'm Nathaniel! I'm a <span id="grade"> sophomore </span> studying Computer Science at Brown University. </p>
 						<p> I'm very interested in renewable energy, vertical farming and machine learning. </p>
 						<!-- <p> In my spare time I like to take photos with my grandpa's old Nikon FM2, and learn languages. I've studied Spanish, Ancient Greek, Mandarin Chinese and German </p> -->
 						<p> <a href="Nathaniel_Ostrer_Resume.pdf">Click here to see my résumé.</a></p>
@@ -87,6 +87,36 @@
 					window.addEventListener('load', function() { document.body.className = document.body.className.replace(/\bis-loading\b/, ''); });
 					document.body.className += (navigator.userAgent.match(/(MSIE|rv:11\.0)/) ? ' is-ie' : '');
 				}
+			</script>
+
+			<script>
+				freshman_start = new Date(2017, 8, 1);
+				freshman_end = new Date(2018, 5, 1)
+				
+				sophomore_end = new Date(2019, 5, 1)
+				
+				junior_end = new Date(2020, 5, 1)
+				
+				senior_end = new Date(2021, 5, 1)
+
+				check = new Date();
+
+				if ((check.getTime() <= freshman_end && check.getTime() >= freshman_start)) {
+					document.getElementById("grade").textContent = "Freshman";
+				}
+
+				else if ((check.getTime() <= sophomore_end && check.getTime() >= freshman_end)) {
+					document.getElementById("grade").textContent = "Sophomore";
+				}
+
+				else if ((check.getTime() <= junior_end && check.getTime() >= sophomore_end)) {
+					document.getElementById("grade").textContent = "Junior";
+				}
+
+				else if ((check.getTime() <= senior_end && check.getTime() >= junior_end)) {
+					document.getElementById("grade").textContent = "Senior";
+				} 
+
 			</script>
 
 	</body>
