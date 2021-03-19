@@ -1,0 +1,123 @@
+<!DOCTYPE HTML>
+<!--
+	Identity by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Nathaniel Ostrer</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!--[if lte IE 8]><script src="assets/js/html5shiv.js"></script><![endif]-->
+		<link rel="stylesheet" href="assets/css/main2.css" />
+		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+
+		<link rel="shortcut icon" href="images/favicon.ico"/>
+		
+		<!--Sweet Alert-->
+		<script src="dist/sweetalert.min.js"></script> <link rel="stylesheet" type="text/css" href="dist/sweetalert.css">
+
+		<script>
+
+		function emailAlert() {
+
+			swal({   title: "Get in Touch",   
+				//text: "Get in",   
+				type: "input",   
+				showCancelButton: true,   
+				closeOnConfirm: false,   
+				animation: "slide-from-top",   
+				inputPlaceholder: "Write something nice" }, 
+				function(inputValue){   
+					if (inputValue === false) 
+						return false;      
+					if (inputValue === "") {     
+						swal.showInputError("You need to write something!");     
+						return false   
+					}      
+					
+					swal("Nice!", "You wrote: " + inputValue, "success"); 
+				});
+		}
+
+		</script>
+
+		<!-- Global site tag (gtag.js) - Google Analytics -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-129753849-1"></script>
+		<script>
+		  window.dataLayer = window.dataLayer || [];
+		  function gtag(){dataLayer.push(arguments);}
+		  gtag('js', new Date());
+
+		  gtag('config', 'UA-129753849-1');
+		</script>
+
+
+	</head>
+	<body class="is-loading">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<section id="main" style="width: 600px;">
+						<h1> About Me </h1>
+						<p> Hi, I'm Nathaniel! I'm a <span id="grade"> (╯°□°)╯︵ ┻━┻ </span> studying Urban Studies and Computer Science at Brown University. </p>
+						<p> I like renewable energy, vertical farming and trains. </p>
+						<!-- <p> In my spare time I like to take photos with my grandpa's old Nikon FM2, and learn languages. I've studied Spanish, Ancient Greek, Mandarin Chinese and German </p> -->
+						<p> <a href="Nathaniel_Ostrer_Resume.pdf">Click here to see my résumé.</a></p>
+					</section>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<ul class="copyright">
+							<li>&copy; <a href="https://nathanielostrer.com/">Nathaniel Ostrer</a></li><li>Design: <a href="https://html5up.net">HTML5 UP</a></li>
+						</ul>
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<!--[if lte IE 8]><script src="assets/js/respond.min.js"></script><![endif]-->
+			<script>
+				if ('addEventListener' in window) {
+					window.addEventListener('load', function() { document.body.className = document.body.className.replace(/\bis-loading\b/, ''); });
+					document.body.className += (navigator.userAgent.match(/(MSIE|rv:11\.0)/) ? ' is-ie' : '');
+				}
+			</script>
+
+			<script>
+				freshman_start = new Date(2017, 8, 1);
+				freshman_end = new Date(2018, 5, 1)
+				
+				sophomore_end = new Date(2019, 5, 1)
+				
+				junior_end = new Date(2020, 5, 1)
+				
+				senior_end = new Date(2021, 5, 1)
+
+				check = new Date();
+
+				if ((check.getTime() <= freshman_end && check.getTime() >= freshman_start)) {
+					document.getElementById("grade").textContent = "Freshman";
+				}
+
+				else if ((check.getTime() <= sophomore_end && check.getTime() >= freshman_end)) {
+					document.getElementById("grade").textContent = "Sophomore";
+				}
+
+				else if ((check.getTime() <= junior_end && check.getTime() >= sophomore_end)) {
+					document.getElementById("grade").textContent = "Junior";
+				}
+
+				else if ((check.getTime() <= senior_end && check.getTime() >= junior_end)) {
+					document.getElementById("grade").textContent = "Senior";
+				}
+
+			</script>
+
+	</body>
+</html>

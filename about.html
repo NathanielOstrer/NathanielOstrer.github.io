@@ -65,10 +65,10 @@
 				<!-- Main -->
 					<section id="main" style="width: 600px;">
 						<h1> About Me </h1>
-						<p> Hi, I'm Nathaniel! I'm a <span id="grade"> (╯°□°)╯︵ ┻━┻ </span> studying Urban Studies and Computer Science at Brown University. </p>
-						<p> I like renewable energy, vertical farming and trains. </p>
+						<p id="blurb"> Hi, I'm Nathaniel! I'm a <span id="grade"> (╯°□°)╯︵ ┻━┻ </span> studying Urban Studies and Computer Science at Brown University. </p>
+						<p> I'm interested in urban planning, sustainability and transportation. </p>
 						<!-- <p> In my spare time I like to take photos with my grandpa's old Nikon FM2, and learn languages. I've studied Spanish, Ancient Greek, Mandarin Chinese and German </p> -->
-						<p> <a href="Nathaniel_Ostrer_Resume.pdf">Click here to see my résumé.</a></p>
+						<!-- <p> <a href="Nathaniel_Ostrer_Resume.pdf">Click here to see my résumé.</a></p> -->
 					</section>
 
 				<!-- Footer -->
@@ -115,6 +115,10 @@
 
 				else if ((check.getTime() <= senior_end && check.getTime() >= junior_end)) {
 					document.getElementById("grade").textContent = "Senior";
+				} 
+
+				else {
+					document.getElementById("blurb").textContent = "Hi, I'm Nathaniel! I studied Urban Studies and Computer Science at Brown University.";
 				} 
 
 			</script>
