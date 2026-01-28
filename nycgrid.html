@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYC Grid: Live</title>
+    <link rel="shortcut icon" href="images/favicon.ico"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-bottom: 1px solid #2d2d44;
+            padding: 1rem 2rem;
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav a {
+            color: #888;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        nav a:hover {
+            color: #fff;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .logo span {
+            color: #f59e0b;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .subtitle {
+            color: #888;
+            margin-bottom: 2rem;
+        }
+
+        .grid-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1a1a2e 0%, #1f1f3a 100%);
+            border: 1px solid #2d2d44;
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .stat-card .label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #888;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .value {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .stat-card .unit {
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .stat-card.green .value { color: #10b981; }
+        .stat-card.yellow .value { color: #f59e0b; }
+        .stat-card.blue .value { color: #3b82f6; }
+        .stat-card.red .value { color: #ef4444; }
+
+        .section {
+            background: linear-gradient(135deg, #1a1a2e 0%, #1f1f3a 100%);
+            border: 1px solid #2d2d44;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .section h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .fuel-mix {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .fuel-item {
+            display: grid;
+            grid-template-columns: 120px 1fr 80px 60px;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .fuel-name {
+            font-weight: 500;
+        }
+
+        .fuel-bar-container {
+            background: #2d2d44;
+            height: 24px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .fuel-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .fuel-bar.nuclear { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+        .fuel-bar.hydro { background: linear-gradient(90deg, #06b6d4, #22d3ee); }
+        .fuel-bar.wind { background: linear-gradient(90deg, #10b981, #34d399); }
+        .fuel-bar.solar { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .fuel-bar.gas { background: linear-gradient(90deg, #ef4444, #f87171); }
+        .fuel-bar.dual { background: linear-gradient(90deg, #f97316, #fb923c); }
+        .fuel-bar.other { background: linear-gradient(90deg, #6b7280, #9ca3af); }
+
+        .fuel-value {
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .fuel-percent {
+            text-align: right;
+            color: #888;
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+            margin-top: 1rem;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .info-box {
+            background: #1a1a2e;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem 1.25rem;
+            margin-bottom: 2rem;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .info-box p {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+        }
+
+        .info-box a {
+            color: #60a5fa;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: #888;
+        }
+
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #2d2d44;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .last-updated {
+            text-align: center;
+            color: #666;
+            font-size: 0.875rem;
+            margin-top: 2rem;
+        }
+
+        .summary-row {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #2d2d44;
+        }
+
+        .summary-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .summary-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .summary-dot.renewable { background: #10b981; }
+        .summary-dot.low-carbon { background: #8b5cf6; }
+        .summary-dot.fossil { background: #ef4444; }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-size: 0.875rem;
+        }
+
+        footer a {
+            color: #888;
+        }
+
+        @media (max-width: 768px) {
+            .fuel-item {
+                grid-template-columns: 100px 1fr 70px;
+            }
+            .fuel-percent {
+                display: none;
+            }
+            .grid-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            main {
+                padding: 1rem;
+            }
+            .fuel-item {
+                grid-template-columns: 80px 1fr 60px;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">NYC <span>Grid</span></div>
+            <div>
+                <a href="index.html">Home</a>
+                <a href="https://www.nyiso.com" target="_blank">NYISO</a>
+                <a href="https://github.com/NathanielOstrer" target="_blank">GitHub</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <h1>New York State Grid: Live</h1>
+        <p class="subtitle">Real-time electricity generation data from the New York Independent System Operator</p>
+
+        <div class="info-box">
+            <p>
+                New York State is working towards a <strong>zero-emission electricity grid by 2040</strong>.
+                The state aims to get 70% of its electricity from renewable sources by 2030.
+                Data is sourced from <a href="https://www.nyiso.com/real-time-dashboard" target="_blank">NYISO</a>.
+            </p>
+        </div>
+
+        <div class="grid-stats">
+            <div class="stat-card">
+                <div class="label">Total Generation</div>
+                <div class="value" id="total-gen">--</div>
+                <div class="unit">MW</div>
+            </div>
+            <div class="stat-card green">
+                <div class="label">Renewable</div>
+                <div class="value" id="renewable-pct">--</div>
+                <div class="unit">%</div>
+            </div>
+            <div class="stat-card blue">
+                <div class="label">Low Carbon</div>
+                <div class="value" id="low-carbon-pct">--</div>
+                <div class="unit">%</div>
+            </div>
+            <div class="stat-card yellow">
+                <div class="label">Est. Emissions</div>
+                <div class="value" id="emissions">--</div>
+                <div class="unit">g CO₂/kWh</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>⚡ Generation by Fuel Type</h2>
+            <div id="fuel-mix-container">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    Loading fuel mix data...
+                </div>
+            </div>
+            <div class="summary-row" id="summary-row" style="display: none;">
+                <div class="summary-item">
+                    <span class="summary-dot renewable"></span>
+                    <span>Renewable: <strong id="sum-renewable">0%</strong></span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-dot low-carbon"></span>
+                    <span>Low Carbon: <strong id="sum-low-carbon">0%</strong></span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-dot fossil"></span>
+                    <span>Fossil: <strong id="sum-fossil">0%</strong></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📊 Generation Over Time</h2>
+            <div class="chart-container">
+                <canvas id="generation-chart"></canvas>
+            </div>
+        </div>
+
+        <p class="last-updated" id="last-updated">Loading...</p>
+    </main>
+
+    <footer>
+        <p>
+            Data from <a href="https://www.nyiso.com" target="_blank">NYISO</a> •
+            Inspired by <a href="https://grid.iamkate.com" target="_blank">grid.iamkate.com</a> •
+            <a href="index.html">nathanielostrer.com</a>
+        </p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script>
+        // Fuel type configuration
+        const FUEL_CONFIG = {
+            'Nuclear': { class: 'nuclear', renewable: false, lowCarbon: true, emissions: 12 },
+            'Hydro': { class: 'hydro', renewable: true, lowCarbon: true, emissions: 24 },
+            'Wind': { class: 'wind', renewable: true, lowCarbon: true, emissions: 11 },
+            'Other Coverage Renewables': { class: 'solar', renewable: true, lowCarbon: true, emissions: 45 },
+            'Natural Gas': { class: 'gas', renewable: false, lowCarbon: false, emissions: 450 },
+            'Dual Fuel': { class: 'dual', renewable: false, lowCarbon: false, emissions: 500 },
+            'Other Fossil Fuels': { class: 'other', renewable: false, lowCarbon: false, emissions: 550 }
+        };
+
+        // Display-friendly names
+        const FUEL_DISPLAY_NAMES = {
+            'Nuclear': 'Nuclear',
+            'Hydro': 'Hydro',
+            'Wind': 'Wind',
+            'Other Renewables': 'Solar & Other',
+            'Other Coverage Renewables': 'Solar & Other',
+            'Natural Gas': 'Natural Gas',
+            'Dual Fuel': 'Dual Fuel',
+            'Other Fossil Fuels': 'Other Fossil'
+        };
+
+        let generationChart = null;
+        let chartData = { labels: [], datasets: [] };
+
+        // Format date for NYISO URL
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}${month}${day}`;
+        }
+
+        // Parse NYISO CSV data
+        function parseNYISOData(csvText) {
+            const results = Papa.parse(csvText, { header: true, skipEmptyLines: true });
+            return results.data;
+        }
+
+        // Get most recent data point
+        function getMostRecentData(data) {
+            if (!data || data.length === 0) return null;
+
+            // Group by timestamp and get the most recent
+            const byTime = {};
+            data.forEach(row => {
+                const time = row['Time Stamp'] || row['Timestamp'];
+                if (!byTime[time]) byTime[time] = [];
+                byTime[time].push(row);
+            });
+
+            const times = Object.keys(byTime).sort();
+            const latestTime = times[times.length - 1];
+            return { time: latestTime, fuels: byTime[latestTime] };
+        }
+
+        // Calculate emissions based on fuel mix
+        function calculateEmissions(fuelData) {
+            let totalGen = 0;
+            let weightedEmissions = 0;
+
+            fuelData.forEach(fuel => {
+                const gen = parseFloat(fuel['Gen MW'] || fuel['Gen MWh'] || 0);
+                const fuelType = fuel['Fuel Category'];
+                const config = FUEL_CONFIG[fuelType];
+
+                if (config) {
+                    totalGen += gen;
+                    weightedEmissions += gen * config.emissions;
+                }
+            });
+
+            return totalGen > 0 ? Math.round(weightedEmissions / totalGen) : 0;
+        }
+
+        // Update the UI with fuel mix data
+        function updateFuelMix(fuelData) {
+            const container = document.getElementById('fuel-mix-container');
+            const summaryRow = document.getElementById('summary-row');
+
+            let totalGen = 0;
+            const fuelTotals = {};
+
+            fuelData.forEach(fuel => {
+                const gen = parseFloat(fuel['Gen MW'] || fuel['Gen MWh'] || 0);
+                const fuelType = fuel['Fuel Category'];
+                totalGen += gen;
+                fuelTotals[fuelType] = (fuelTotals[fuelType] || 0) + gen;
+            });
+
+            // Sort by generation amount
+            const sortedFuels = Object.entries(fuelTotals)
+                .sort((a, b) => b[1] - a[1]);
+
+            // Calculate summary stats
+            let renewableGen = 0;
+            let lowCarbonGen = 0;
+            let fossilGen = 0;
+
+            sortedFuels.forEach(([fuel, gen]) => {
+                const config = FUEL_CONFIG[fuel];
+                if (config) {
+                    if (config.renewable) renewableGen += gen;
+                    if (config.lowCarbon) lowCarbonGen += gen;
+                    if (!config.lowCarbon) fossilGen += gen;
+                }
+            });
+
+            // Update stats cards
+            document.getElementById('total-gen').textContent = Math.round(totalGen).toLocaleString();
+            document.getElementById('renewable-pct').textContent = ((renewableGen / totalGen) * 100).toFixed(1);
+            document.getElementById('low-carbon-pct').textContent = ((lowCarbonGen / totalGen) * 100).toFixed(1);
+            document.getElementById('emissions').textContent = calculateEmissions(fuelData);
+
+            // Render fuel bars
+            let html = '<div class="fuel-mix">';
+            sortedFuels.forEach(([fuel, gen]) => {
+                const pct = (gen / totalGen) * 100;
+                const config = FUEL_CONFIG[fuel] || { class: 'other' };
+                const displayName = FUEL_DISPLAY_NAMES[fuel] || fuel;
+
+                html += `
+                    <div class="fuel-item">
+                        <span class="fuel-name">${displayName}</span>
+                        <div class="fuel-bar-container">
+                            <div class="fuel-bar ${config.class}" style="width: ${pct}%"></div>
+                        </div>
+                        <span class="fuel-value">${Math.round(gen).toLocaleString()} MW</span>
+                        <span class="fuel-percent">${pct.toFixed(1)}%</span>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+
+            // Update summary
+            document.getElementById('sum-renewable').textContent = ((renewableGen / totalGen) * 100).toFixed(1) + '%';
+            document.getElementById('sum-low-carbon').textContent = ((lowCarbonGen / totalGen) * 100).toFixed(1) + '%';
+            document.getElementById('sum-fossil').textContent = ((fossilGen / totalGen) * 100).toFixed(1) + '%';
+            summaryRow.style.display = 'flex';
+        }
+
+        // Initialize the chart
+        function initChart() {
+            const ctx = document.getElementById('generation-chart').getContext('2d');
+
+            generationChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Total Generation (MW)',
+                            data: [],
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: { color: '#888' }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#666', maxTicksLimit: 12 },
+                            grid: { color: '#2d2d44' }
+                        },
+                        y: {
+                            ticks: { color: '#666' },
+                            grid: { color: '#2d2d44' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update chart with historical data
+        function updateChart(data) {
+            if (!generationChart) return;
+
+            const timeData = {};
+            data.forEach(row => {
+                const time = row['Time Stamp'] || row['Timestamp'];
+                const gen = parseFloat(row['Gen MW'] || row['Gen MWh'] || 0);
+                timeData[time] = (timeData[time] || 0) + gen;
+            });
+
+            const sortedTimes = Object.keys(timeData).sort();
+            const labels = sortedTimes.map(t => {
+                const date = new Date(t);
+                return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            });
+
+            generationChart.data.labels = labels;
+            generationChart.data.datasets[0].data = sortedTimes.map(t => Math.round(timeData[t]));
+            generationChart.update();
+        }
+
+        // Fetch data from NYISO (via CORS proxy for demo)
+        async function fetchNYISOData() {
+            const today = formatDate(new Date());
+            const nyisoUrl = `http://mis.nyiso.com/public/csv/rtfuelmix/${today}rtfuelmix.csv`;
+
+            // List of CORS proxies to try
+            const corsProxies = [
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(nyisoUrl)}`,
+                `https://corsproxy.io/?${encodeURIComponent(nyisoUrl)}`,
+                `https://proxy.cors.sh/${nyisoUrl}`
+            ];
+
+            for (const proxyUrl of corsProxies) {
+                try {
+                    const response = await fetch(proxyUrl);
+                    if (response.ok) {
+                        const csvText = await response.text();
+                        if (csvText && csvText.includes('Fuel Category')) {
+                            return csvText;
+                        }
+                    }
+                } catch (e) {
+                    console.log('Proxy failed:', proxyUrl);
+                }
+            }
+
+            // If all proxies fail, use sample data
+            return null;
+        }
+
+        // Sample data for when API is unavailable
+        function getSampleData() {
+            const now = new Date();
+            const data = [];
+            const fuels = [
+                { 'Fuel Category': 'Natural Gas', baseGen: 8500 },
+                { 'Fuel Category': 'Nuclear', baseGen: 4200 },
+                { 'Fuel Category': 'Hydro', baseGen: 3800 },
+                { 'Fuel Category': 'Wind', baseGen: 2100 },
+                { 'Fuel Category': 'Other Coverage Renewables', baseGen: 800 },
+                { 'Fuel Category': 'Dual Fuel', baseGen: 600 },
+                { 'Fuel Category': 'Other Fossil Fuels', baseGen: 200 }
+            ];
+
+            // Generate data for the past 6 hours (every 5 min)
+            for (let i = 72; i >= 0; i--) {
+                const time = new Date(now - i * 5 * 60 * 1000);
+                const timeStr = time.toISOString();
+
+                fuels.forEach(fuel => {
+                    // Add some variation
+                    const variation = 1 + (Math.sin(i / 10) * 0.1) + (Math.random() * 0.05 - 0.025);
+                    data.push({
+                        'Time Stamp': timeStr,
+                        'Fuel Category': fuel['Fuel Category'],
+                        'Gen MW': Math.round(fuel.baseGen * variation)
+                    });
+                });
+            }
+
+            return data;
+        }
+
+        // Main initialization
+        async function init() {
+            initChart();
+
+            try {
+                const csvText = await fetchNYISOData();
+                let data;
+
+                if (csvText) {
+                    data = parseNYISOData(csvText);
+                    document.getElementById('last-updated').innerHTML =
+                        `Live data from NYISO • Updated ${new Date().toLocaleTimeString()}`;
+                } else {
+                    // Use sample data if API unavailable
+                    data = getSampleData();
+                    document.getElementById('last-updated').innerHTML =
+                        `Sample data (NYISO API unavailable) • <a href="https://www.nyiso.com/real-time-dashboard" target="_blank">View live data</a>`;
+                }
+
+                const latest = getMostRecentData(data);
+                if (latest) {
+                    updateFuelMix(latest.fuels);
+                }
+
+                updateChart(data);
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                document.getElementById('fuel-mix-container').innerHTML =
+                    '<p style="color: #ef4444; text-align: center; padding: 2rem;">Error loading data. Please try again later.</p>';
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', init);
+
+        // Refresh data every 5 minutes
+        setInterval(init, 5 * 60 * 1000);
+    </script>
+</body>
+</html>
